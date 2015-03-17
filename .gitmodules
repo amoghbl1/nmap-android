@@ -1,0 +1,6 @@
+[submodule "nmap"]
+	path = external/nmap
+	url = https://github.com/nmap/nmap.git
+[submodule "external/nmap"]
+	path = external/nmap
+	url = https://github.com/nmap/nmap.git

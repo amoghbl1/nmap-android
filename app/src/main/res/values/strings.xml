@@ -4,5 +4,7 @@
     <string name="app_name">nmap-android</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="nmap_command">nmap</string>
+    <string name="scan_button">Scan!</string>
+    <string name="scan_command_hint">Enter your flags here...</string>
 </resources>

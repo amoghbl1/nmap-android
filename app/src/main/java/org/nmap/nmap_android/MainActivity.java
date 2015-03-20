@@ -1,17 +1,37 @@
 package org.nmap.nmap_android;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
+
+import org.nmap.binary_installer.NmapBinaryInstaller;
+
+import java.io.File;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    String DEFAULT_SHARED_PREFERENCES = "mySharedPrefs";
+    String firstStartPref = "firstStart";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        boolean firstInstall = true;
+        SharedPreferences mySharedPreferences = getSharedPreferences(DEFAULT_SHARED_PREFERENCES, MODE_MULTI_PROCESS);
+        firstInstall = mySharedPreferences.getBoolean(firstStartPref, true);
+        if(firstInstall) {
+            NmapBinaryInstaller installer = new NmapBinaryInstaller(getApplicationContext(), new File("/sdcard/nmap"));
+            installer.installResources();
+        }
+        Button scan = (Button)findViewById(R.id.scan_BT);
+        EditText flags = (EditText)findViewById(R.id.flags_ET);
+
     }
 
 

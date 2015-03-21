@@ -26,7 +26,7 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences mySharedPreferences = getSharedPreferences(DEFAULT_SHARED_PREFERENCES, MODE_MULTI_PROCESS);
         firstInstall = mySharedPreferences.getBoolean(firstStartPref, true);
         if(firstInstall) {
-            NmapBinaryInstaller installer = new NmapBinaryInstaller(getApplicationContext(), new File("/sdcard/nmap"));
+            NmapBinaryInstaller installer = new NmapBinaryInstaller(getApplicationContext());
             installer.installResources();
         }
         Button scan = (Button)findViewById(R.id.scan_BT);

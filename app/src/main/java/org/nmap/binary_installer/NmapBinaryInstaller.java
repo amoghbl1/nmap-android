@@ -1,24 +1,17 @@
 package org.nmap.binary_installer;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.content.res.Resources;
 import android.util.Log;
 
 import org.nmap.nmap_android.R;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.concurrent.TimeoutException;
+import org.nmap.utils.CommandRunner;
 
 public class NmapBinaryInstaller {
     Context context;
@@ -33,12 +26,9 @@ public class NmapBinaryInstaller {
      */
     public boolean installResources() {
         InputStream inputStream;
-        OutputStream outputStream;
         File outFile;
         File appBinHome = context.getDir("bin", Context.MODE_MULTI_PROCESS);
         Resources resources = context.getResources();
-        byte[] buffer = new byte[1024];
-        int bytecount;
 
         try {
 
@@ -69,6 +59,10 @@ public class NmapBinaryInstaller {
             inputStream = resources.openRawResource(R.raw.nmap_services);
             outFile = new File(appBinHome, "nmap-services");
             moveBinaryRawResourceToFile(inputStream, outFile);
+
+            // Changing all the permissions of the files in the app_bin folder
+            String output = CommandRunner.execCommand("chmod 6755 -R "+appBinHome.getAbsolutePath()+"/");
+            Log.d(DEBUG_TAG, "chmod output: "+output);
         }
         catch (Exception e) {
             Log.d(DEBUG_TAG, e.getMessage());

@@ -24,6 +24,9 @@
         android:layout_height="wrap_content"
         android:text="@string/scan_button" />
     <TextView
+        android:id="@+id/scan_output_TV"
+        android:scrollbars="vertical"
+        android:maxLines="1000"
         android:layout_below="@+id/scan_BT"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

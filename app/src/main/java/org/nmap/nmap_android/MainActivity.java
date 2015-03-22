@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.nmap.binary_installer.NmapBinaryInstaller;
@@ -90,18 +89,16 @@ public class MainActivity extends Activity {
     }
 
     public class AsyncCommandExecutor extends AsyncTask<String, Void, Void> {
-        ProgressDialog progressDialog;
+
         public String returnOutput;
-
-
+        private ProgressDialog progressDialog = new ProgressDialog(MainActivity.this);
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setTitle("NMAP");
-            progressDialog.setMessage("Executing...");
-            Log.d(DEBUG_TAG, progressDialog.toString());
-            // progressDialog.show();
+            this.progressDialog.setTitle("NMAP");
+            this.progressDialog.setMessage("Scanning...");
+            this.progressDialog.setCancelable(false);
+            this.progressDialog.show();
             return;
         }
         @Override
@@ -128,8 +125,9 @@ public class MainActivity extends Activity {
         }
         @Override
         protected void onPostExecute(Void result) {
-            progressDialog.dismiss();
             MainActivity.scanResult.setText(returnOutput);
+            if(this.progressDialog.isShowing())
+                this.progressDialog.dismiss();
         }
     }
 }

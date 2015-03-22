@@ -14,11 +14,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.nmap.binary_installer.NmapBinaryInstaller;
+import org.nmap.utils.CommandRunner;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 
@@ -29,8 +32,8 @@ public class MainActivity extends Activity {
     String DEFAULT_SHARED_PREFERENCES = "mySharedPrefs";
     String firstStartPref = "firstStart";
 
-    File appBinHome;
-    String NMAP_COMMAND = "nmap ";
+    public static File appBinHome;
+    String NMAP_COMMAND = "./nmap ";
 
     public static TextView scanResult = null;
 
@@ -47,9 +50,9 @@ public class MainActivity extends Activity {
             NmapBinaryInstaller installer = new NmapBinaryInstaller(getApplicationContext());
             installer.installResources();
             Log.d(DEBUG_TAG, "Installing binaries");
+            // TODO: Write some test code to see if the binaries are placed correctly and have the right permissions!
             mySharedPreferences.edit().putBoolean(firstStartPref, false).commit();
         }
-
         Button scan = (Button)findViewById(R.id.scan_BT);
         final EditText flags = (EditText)findViewById(R.id.flags_ET);
         scanResult = (TextView)findViewById(R.id.scan_output_TV);
@@ -60,7 +63,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 String f = flags.getText().toString();
-                new AsyncCommandExecutor().execute(appBinHome.getAbsolutePath()+ "/" + NMAP_COMMAND + f);
+                new AsyncCommandExecutor().execute( NMAP_COMMAND + f);
             }
         });
 
@@ -103,24 +106,16 @@ public class MainActivity extends Activity {
         }
         @Override
         protected Void doInBackground(String... params) {
-            String command = params[0];
             try {
-
-                Process process = Runtime.getRuntime().exec(command);
-                process.waitFor();
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
-                int read;
-                char[] buf = new char[4096];
-                StringBuffer output = new StringBuffer();
-                while ((read = reader.read(buf)) > 0) {
-                    output.append(buf, 0, read);
-                }
-                reader.close();
-                returnOutput = output.toString();
-            } catch (Exception e) {
+                this.returnOutput = CommandRunner.execCommand(params[0], MainActivity.appBinHome.getAbsoluteFile());
+            } catch (IOException e) {
+                this.returnOutput = "IOException while trying to scan!";
+                Log.d(DEBUG_TAG, e.getMessage());
+            } catch (InterruptedException e) {
+                this.returnOutput = "Nmap Scan Interrupted!";
                 Log.d(DEBUG_TAG, e.getMessage());
             }
+
             return null;
         }
         @Override

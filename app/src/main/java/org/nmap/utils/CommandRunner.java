@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 import org.nmap.nmap_android.MainActivity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -16,18 +17,27 @@ public class CommandRunner {
 
     private String DEBUG_TAG = "myTag";
 
-    public static String execCommand(String command) throws IOException, InterruptedException{
-        Process process = Runtime.getRuntime().exec(command);
+    public static String execCommand(String command, File currentDirectory) throws IOException, InterruptedException{
+        Process process = Runtime.getRuntime().exec(command, null, currentDirectory);
         process.waitFor();
-        BufferedReader reader = new BufferedReader(
+        BufferedReader readerInputStream = new BufferedReader(
                 new InputStreamReader(process.getInputStream()));
+        BufferedReader readerErrorStream = new BufferedReader(
+                new InputStreamReader(process.getErrorStream())
+        );
         int read;
         char[] buf = new char[4096];
         StringBuffer output = new StringBuffer();
-        while ((read = reader.read(buf)) > 0) {
+        StringBuffer error = new StringBuffer();
+        while ((read = readerInputStream.read(buf)) > 0) {
             output.append(buf, 0, read);
         }
-        reader.close();
+        while((read = readerErrorStream.read(buf)) > 0) {
+            error.append(buf, 0, read);
+        }
+        readerInputStream.close();
+        readerErrorStream.close();
+        Log.d("myTag", error.toString());
         return output.toString();
     }
 }

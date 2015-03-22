@@ -3,6 +3,7 @@ package org.nmap.binary_installer;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.nmap.nmap_android.R;
 
@@ -31,6 +32,8 @@ public class NmapBinaryInstaller {
         Resources resources = context.getResources();
 
         try {
+            // Delete the file before we write anything there
+            CommandRunner.execCommand("rm -rf ./", appBinHome);
 
             inputStream = resources.openRawResource(R.raw.nmap);
             outFile = new File(appBinHome, "nmap");
@@ -60,14 +63,23 @@ public class NmapBinaryInstaller {
             outFile = new File(appBinHome, "nmap-services");
             moveBinaryRawResourceToFile(inputStream, outFile);
 
+            String []binaries = {"nmap", "nmap-os-db", "nmap-payloads", "nmap-protocols", "nmap-rpc", "nmap-service-probes", "nmap-services"};
+            String output;
+
             // Changing all the permissions of the files in the app_bin folder
-            String output = CommandRunner.execCommand("chmod 6755 -R "+appBinHome.getAbsolutePath()+"/");
-            Log.d(DEBUG_TAG, "chmod output: "+output);
+            for(int i=0; i<binaries.length ; i++) {
+                output = CommandRunner.execCommand("chmod 6755 ./" + binaries[i], appBinHome.getAbsoluteFile());
+                Log.d(DEBUG_TAG, "chmod output: " + CommandRunner.execCommand("ls -la ./"+binaries[i], appBinHome.getAbsoluteFile()));
+            }
         }
-        catch (Exception e) {
+        catch (IOException e) {
+            Toast.makeText(context, "IOException!", Toast.LENGTH_LONG).show();
             Log.d(DEBUG_TAG, e.getMessage());
         }
-
+        catch (InterruptedException e) {
+            Toast.makeText(context, "Command execution Interrupted!", Toast.LENGTH_LONG).show();
+            Log.d(DEBUG_TAG, "Interrupted Exception: " + e.getMessage());
+        }
 
         return true;
     }

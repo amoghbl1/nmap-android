@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 String f = flags.getText().toString();
-                new AsyncCommandExecutor().execute( NMAP_COMMAND + f);
+                new AsyncCommandExecutor().execute(f);
             }
         });
 

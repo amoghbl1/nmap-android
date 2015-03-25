@@ -38,6 +38,6 @@ public class CommandRunner {
         readerInputStream.close();
         readerErrorStream.close();
         Log.d("myTag", error.toString());
-        return output.toString();
+        return output.toString() + error.toString();
     }
 }
